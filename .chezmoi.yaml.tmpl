@@ -1,0 +1,22 @@
+{{- /* Checks if running interactively */ -}}
+{{- $interactive := stdinIsATTY -}}
+{{- $tags := promptStringOnce  . "tags" "Tags to add to this configuration (optional)" -}}
+{{- $tagList := splitList "," $tags -}}
+
+data:
+    tags: {{ $tags | trim | quote }}
+    tagList:
+        {{- toYaml $tagList | trim | nindent 8 }}
+
+# hooks:
+#     init:
+#         post:
+#             command: "echo"
+#             args:
+#                 - "post-init-hook"
+
+#     apply:
+#         pre:
+#             command: "echo"
+#             args:
+#                 - "pre-apply-hook"

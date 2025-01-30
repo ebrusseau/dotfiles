@@ -1,0 +1,25 @@
+---
+package_manager:
+  homebrew:
+    command: "brew"
+    sudo: false
+    install_args: "bundle install --no-upgrade --no-lock --verbose --file=/dev/stdin"
+    update_args: "update"
+    pass_packages_via_stdin: true
+    env:
+      HOMEBREW_NO_ENV_HINTS: 1
+    install_script: |
+      if [ "$(command -v curl)" ]; then
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      elif [ "$(command -v wget)" ]; then
+          /bin/bash -c "$(wget -qO- https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      else
+          echo "ERROR: Cannot install homebrew without curl or wget." >&2
+          exit 1
+      fi
+  apt:
+    command: "apt-get"
+    sudo: true
+    install_args: "-y install"
+    update_args: "update"
+    pass_packages_via_stdin: false

@@ -1,0 +1,28 @@
+machine:
+  arch:
+    ubuntu:
+      package_manager: homebrew
+      packages:
+        - brew "bash"
+        - brew "bash-completion@2"
+        - brew "bat"
+        - brew "chezmoi"
+        - brew "fd"
+        - brew "fzf"
+        - brew "git"
+        - brew "git-crypt"
+        - brew "htop"
+        - brew "jq"
+        - brew "neovim"
+        - brew "tree"
+        - brew "wget"
+        - brew "yq"
+        - brew "zoxide"
+        # - cask "font-jetbrains-mono-nerd-font"
+        # - cask "google-chrome"
+        # - cask "visual-studio-code"
+        # - 'mas "1Password for Safari", id: 1569813296'
+        # - 'mas "Disk Map", id: 715464874'
+        # - 'mas "Pixelmator", id: 407963104'
+        # - 'mas "Speedtest", id: 1153157709'
+        # - vscode "redhat.vscode-yaml"

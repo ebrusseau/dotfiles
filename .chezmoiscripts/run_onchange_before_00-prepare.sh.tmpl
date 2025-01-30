@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+{{ template "script_header.tmpl" }}
+
+binary_dir="$HOME/.local/bin"
+installed_binaries=()
+binaries=(
+    "gum|{{- gitHubLatestReleaseAssetURL "charmbracelet/gum" (printf "gum_*_%s_%s.tar.gz" (output "uname" "-s" | trim) (output "uname" "-m" | trim)) -}}"
+)
+
+mkdir -p $binary_dir
+for i in $binaries; do 
+  binary="${i%|*}"
+  url="${i#*|}"
+  
+  if [ "$(command -v ${binary})" ]; then
+    echo "Required binary '${binary}' exists."
+  else
+    echo "Required binary '${binary}' does not exist."
+    filename="${url##*/}"
+    download_dir=$(mktemp -d /tmp/chezmoi-prepare-sh.XXXXXX)
+    
+    trap 'rm -rf ${download_dir}' ERR EXIT
+
+    echo "Downloading ${filename} ..."
+    if [ "$(command -v curl)" ]; then
+      curl -fsSL -o "$download_dir/$filename" "${url}"
+    elif [ "$(command -v wget)" ]; then
+      wget -qO "$download_dir/$filename" "${url}"
+    else
+      echo "ERROR: Unable to download; curl or wget not installed." >&2
+      exit 1
+    fi
+    
+    case "${filename}" in
+        *.tar.gz)
+            unpack_command="$(which tar) -zxvf ${download_dir}/${filename} -C ${download_dir}"
+            ;;
+        *)
+            echo "ERROR: Unable to unpack ${filename}; cannot handle ${extension} files"
+            exit 1
+            ;;
+    esac
+    
+    echo "Unpacking ${filename} ..."
+    sh -c "${unpack_command}"
+    return_code=$?
+    if [ $return_code -ne 0 ]; then
+        echo "ERROR: Could not unpack ${filename}; returned: $return_code"
+        exit $return_code
+    fi
+    echo "Moving ${binary} to ${binary_dir} ..."
+    find "${download_dir}" -name "${binary}" -type f -exec mv -fv {} "${binary_dir}" \;
+    installed_binaries+=("${binary_dir}/${binary}")
+  fi
+done
+
+if [ ${#installed_binaries[@]} -gt 0 ]; then
+    echo "Installed: ${installed_binaries}"
+    export CHEZMOI_TEMPORARY_BINARIES="$installed_binaries"
+fi
+{{ template "script_footer.tmpl" }}

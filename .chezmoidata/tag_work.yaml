@@ -1,0 +1,15 @@
+tag:
+  work:
+    machine:
+      arch:
+        darwin:
+          is_darwin_work: true
+          packages:
+            - cask "microsoft-azure-storage-explorer"
+            - cask "powershell"
+            - cask "vmware-fusion"
+            - cask "webex-meetings"
+            - cask "zoom"
+            - 'mas "Patterns", id: 429449079'
+            - 'mas "Power JSON Editor", id: 499768540'
+            - 'mas "SubnetCalc", id: 412946682'

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e
+
+{{ template "script_header.tmpl" }}
+
+echo "Checking for OS updates ..."
+OLD_IFS="$IFS"
+IFS=$'\n'
+available=(
+    $(softwareupdate --list --product-types macOS,Safari 2> /dev/null | grep "* Label"  | cut -d ' ' -f 3-)
+)
+
+echo "There are ${#available[@]} updates to install."
+echo ""
+
+if [ "${#available[@]}" -gt 0 ]; then
+    echo "Downloading udpates ..."
+    for update in "${available[@]}"; do
+        softwareupdate --verbose --download "${update}"
+        echo ""
+    done
+
+    if $(gum confirm "Install updates and restart now?"); then
+        echo "Installing updates ..."
+        sudo softwareupdate --no-scan --install "${available[@]}" --restart --agree-to-license
+    fi
+fi
+IFS=$OLD_IFS
+{{ template "script_footer.tmpl" }}

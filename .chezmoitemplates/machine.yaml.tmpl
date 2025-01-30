@@ -1,0 +1,31 @@
+---
+{{ $archId := .chezmoi.os -}}
+{{ $machineData := dict -}}
+{{ $packages := list -}}
+{{ $appliedTags := .tags | trim | replace " " "," | splitList "," | uniq | sortAlpha -}}
+
+{{- if eq $archId "linux" -}}
+{{-   $archId = .chezmoi.osRelease.id -}}
+{{- end -}}
+
+{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "arch" "default" dict .) "packages") -}}
+{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "arch" $archId dict .) "packages") -}}
+{{- $packages = concat $packages (dig "machine" "arch" $archId "packages" list .) -}}
+{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "host" "default" dict .) "packages") -}}
+{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "host" .chezmoi.hostname dict .) "packages") -}}
+{{- $packages = concat $packages (dig "machine" "host" .chezmoi.hostname "packages" list .) -}}
+
+{{- range $tag, $tagValue := .tag -}}
+{{-   if (has $tag $appliedTags) -}}
+{{-     $machineData = mergeOverwrite $machineData (omit (dig "machine" "arch" $archId dict $tagValue) "packages") -}}
+{{-     $packages = concat $packages (dig "machine" "arch" $archId "packages" list $tagValue) -}}
+{{-   end -}}
+{{- end -}}
+
+{{- $packageManagerName := get $machineData "package_manager" | default "none" -}}
+{{- $packageManager := dict "name" $packageManagerName "sudo" false "pass_packages_via_stdin" false "install_script" "" -}}
+{{- $packageManager = mergeOverwrite $packageManager (dig "package_manager" $packageManagerName dict .) -}}
+{{- $machineData = set $machineData "package_manager" $packageManager -}}
+{{- $machineData = set $machineData "packages" ($packages | uniq | sortAlpha) -}}
+
+{{ toYaml $machineData }}
