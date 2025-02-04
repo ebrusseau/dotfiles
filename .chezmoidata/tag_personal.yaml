@@ -5,4 +5,6 @@ tag:
         darwin:
           is_darwin_personal: true
           packages:
-            - cask "mycask"
+            homebrew:
+              casks:
+                zoom: false

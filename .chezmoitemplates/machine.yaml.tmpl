@@ -1,31 +1,28 @@
 ---
 {{ $archId := .chezmoi.os -}}
-{{ $machineData := dict -}}
-{{ $packages := list -}}
-{{ $appliedTags := .tags | trim | replace " " "," | splitList "," | uniq | sortAlpha -}}
+{{- $archData := get .machine.arch "default" -}}
+{{- $hostData := get .machine.host "default" -}}
+{{- $tagData := get .machine.arch "default" -}}
 
 {{- if eq $archId "linux" -}}
 {{-   $archId = .chezmoi.osRelease.id -}}
 {{- end -}}
 
-{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "arch" "default" dict .) "packages") -}}
-{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "arch" $archId dict .) "packages") -}}
-{{- $packages = concat $packages (dig "machine" "arch" $archId "packages" list .) -}}
-{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "host" "default" dict .) "packages") -}}
-{{- $machineData = mergeOverwrite $machineData (omit (dig "machine" "host" .chezmoi.hostname dict .) "packages") -}}
-{{- $packages = concat $packages (dig "machine" "host" .chezmoi.hostname "packages" list .) -}}
-
-{{- range $tag, $tagValue := .tag -}}
-{{-   if (has $tag $appliedTags) -}}
-{{-     $machineData = mergeOverwrite $machineData (omit (dig "machine" "arch" $archId dict $tagValue) "packages") -}}
-{{-     $packages = concat $packages (dig "machine" "arch" $archId "packages" list $tagValue) -}}
-{{-   end -}}
+{{- if (hasKey .machine.arch $archId) -}}
+{{-   $archData = mergeOverwrite $archData (get .machine.arch $archId) -}}
 {{- end -}}
 
-{{- $packageManagerName := get $machineData "package_manager" | default "none" -}}
-{{- $packageManager := dict "name" $packageManagerName "sudo" false "pass_packages_via_stdin" false "install_script" "" -}}
-{{- $packageManager = mergeOverwrite $packageManager (dig "package_manager" $packageManagerName dict .) -}}
-{{- $machineData = set $machineData "package_manager" $packageManager -}}
-{{- $machineData = set $machineData "packages" ($packages | uniq | sortAlpha) -}}
+{{- range $tagName := .tagList -}}
+{{-   if (hasKey $.tag $tagName) -}}
+{{-     with (get $.tag $tagName) -}}
+{{-       $tagData = mergeOverwrite $tagData (dig "machine" "arch" $archId dict .) -}}
+{{-     end -}}
+{{    end -}}
+{{- end -}}
 
+{{- if (hasKey .machine.host .chezmoi.hostname) -}}
+{{-     $hostData = mergeOverwrite $hostData (get .machine.host .chezmoi.hostname) -}}
+{{- end -}}
+
+{{- $machineData := mergeOverwrite $archData $tagData $hostData -}}
 {{ toYaml $machineData }}

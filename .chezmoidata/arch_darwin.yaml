@@ -1,38 +1,49 @@
 machine:
   arch:
     darwin:
-      package_manager: homebrew
       packages:
-        - brew "bash"
-        - brew "bash-completion@2"
-        - brew "bat"
-        - brew "chezmoi"
-        - brew "dockutil"
-        - brew "fd"
-        - brew "fzf"
-        - brew "git"
-        - brew "git-crypt"
-        - brew "htop"
-        - brew "jq"
-        - brew "mas"
-        - brew "neovim"
-        - brew "tree"
-        - brew "watch"
-        - brew "wget"
-        - brew "yq"
-        - brew "zoxide"
-        - cask "1password"
-        - cask "1password-cli"
-        - cask "bartender"
-        - cask "betterzip"
-        - cask "flycut"
-        - cask "font-jetbrains-mono-nerd-font"
-        - cask "google-chrome"
-        - cask "numi"
-        - cask "sourcetree"
-        - cask "visual-studio-code"
-        - 'mas "1Password for Safari", id: 1569813296'
-        - 'mas "Disk Map", id: 715464874'
-        - 'mas "Pixelmator", id: 407963104'
-        - 'mas "Speedtest", id: 1153157709'
-        - vscode "redhat.vscode-yaml"
+        homebrew:
+          brews:
+            bash: true
+            bash-completion@2: true
+            bat: true
+            chezmoi: true
+            dockutil: true
+            fd: true
+            fzf: true
+            git: true
+            git-crypt: true
+            htop: true
+            jq: true
+            mas: true
+            neovim: true
+            tree: true
+            watch: true
+            wget: true
+            yq: true
+            zoxide: true
+          casks:
+            1password: true
+            1password-cli: true
+            bartender: true
+            betterzip: true
+            flycut: true
+            font-jetbrains-mono-nerd-font: true
+            google-chrome: true
+            sourcetree: true
+            visual-studio-code: true
+          mas:
+            "1Password for Safari":
+              id: 1569813296
+              install: true
+            "Disk Map":
+              id: 715464874
+              install: true
+            "Pixelmator":
+              id: 407963104
+              install: true
+            "Speedtest":
+              id: 1153157709
+              install: true
+          vscode:
+            redhat.vscode-yaml: true

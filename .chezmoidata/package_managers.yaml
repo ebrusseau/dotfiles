@@ -6,6 +6,7 @@ package_manager:
     install_args: "bundle install --no-upgrade --no-lock --verbose --file=/dev/stdin"
     update_args: "update"
     pass_packages_via_stdin: true
+    list_template: "homebrew_package_list.tmpl"
     env:
       HOMEBREW_NO_ENV_HINTS: 1
     install_script: |
@@ -17,6 +18,7 @@ package_manager:
           echo "ERROR: Cannot install homebrew without curl or wget." >&2
           exit 1
       fi
+
   apt:
     command: "apt-get"
     sudo: true

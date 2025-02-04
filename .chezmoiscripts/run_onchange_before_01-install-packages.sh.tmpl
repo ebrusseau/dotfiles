@@ -2,48 +2,57 @@
 
 set -e
 
-{{ $machine := (fromYaml (includeTemplate "machine.yaml.tmpl" .)) -}}
-{{ $name := get $machine.package_manager "name" -}}
-{{ $command := get $machine.package_manager "command" -}}
-{{ $sudo := (or (get $machine.package_manager "sudo") (eq .chezmoi.username "root")) | ternary "sudo " "" -}}
-{{ $install_args := get $machine.package_manager "install_args" -}}
-{{ $update_args := get $machine.package_manager "update_args" -}}
-{{ $pass_packages_via_stdin := get $machine.package_manager "pass_packages_via_stdin" -}}
-{{ $install_script := get $machine.package_manager "install_script" -}}
-{{ $env := get $machine.package_manager "env" -}}
-
-{{ range $var, $value := $env }}
-{{ printf "%s=%s" ($var | upper) ($value | quote) }}
-{{ end }}
-
 {{ template "script_header.tmpl" }}
+{{ $machine := (fromYaml (includeTemplate "machine.yaml.tmpl" .)) -}}
+{{ $packages := list -}}
+{{ range $packageManagerName, $packageData := $machine.packages -}}
+{{   if (hasKey $.package_manager $packageManagerName) -}}
+{{     $packageManagerOptions := mergeOverwrite (get $.package_manager "default") (get $.package_manager $packageManagerName) -}}
+{{     $sudo := (or $packageManagerOptions.sudo (eq $.chezmoi.username "root")) | ternary "sudo " "" -}}
+{{     if (not (empty $packageManagerOptions.list_template)) -}}
+{{       $packages = concat $packages (fromYaml (includeTemplate $packageManagerOptions.list_template $packageData)) -}}
+{{     else -}}
+{{       range $packageName, $install := $packageData -}}
+{{         if $install -}}
+{{           $packages append $packages $packageName -}}
+{{         end -}}
+{{       end -}}
+{{    end -}}
 
-{{ if eq $name "none" -}}
-echo "WARN: package_manager set to 'none'; nothing to do."
-{{ else -}}
-if [ ! "$(command -v '{{- $command -}}')" ]; then
-{{- if not (empty $install_script) }}
-    echo "Installing {{ $name }} ..."
-{{ $install_script | indent 4 -}}
-{{ else }}
-    echo "ERROR: Unable to find package manager command '{{- $command -}}'"
+####
+# {{ $packageManagerName }}
+####
+{{      range $var, $value := $packageManagerOptions.env -}}
+{{        printf "%s=%s" ($var | upper) ($value | quote) }}
+{{      end }}
+
+# Check for Package Manager Binary 
+if [ ! "$(command -v '{{- $packageManagerOptions.command -}}')" ]; then
+{{-     if not (empty $packageManagerOptions.install_script) }}
+    echo "Installing {{ $packageManagerName }} ..."
+{{        $packageManagerOptions.install_script | indent 4 -}}
+{{      else }}
+    echo "ERROR: Unable to find package manager command '{{- $packageManagerOptions.command -}}'"
     exit 1
-{{- end }}
-{{ if not (empty $update_args) -}}
+{{-     end }}
+{{      if not (empty $packageManagerOptions.update_args) -}}
 else
-    echo "Updating {{ $name }} ..."
-    {{ printf "%s%s %s" $sudo $command $update_args }}
-{{ end -}}
+    # Update Package Manager/Cache
+    echo "Updating {{ $packageManagerName }} ..."
+    {{    printf "%s%s %s" $sudo $packageManagerOptions.command $packageManagerOptions.update_args -}}
+{{      end }}
 fi
 
-{{ if $pass_packages_via_stdin -}}
-{{   printf "%s%s %s" $sudo $command $install_args }} << EOF
-{{   range $machine.packages }}
-{{-    . }}
-{{   end -}}
+# Execute Install Command
+{{      if $packageManagerOptions.pass_packages_via_stdin -}}
+{{        printf "%s%s %s" $sudo $packageManagerOptions.command $packageManagerOptions.install_args }} << EOF
+{{        range $packages }}
+{{-         . }}
+{{        end -}}
 EOF
-{{ else -}}
-{{   printf "%s%s %s %s" $sudo $command $install_args (join " " $machine.packages) -}}
-{{ end -}}
+{{      else -}}
+{{        printf "%s%s %s %s" $sudo $packageManagerOptions.command $packageManagerOptions.install_args (join " " $packages) -}}
+{{      end -}}
+{{  end -}}
 {{ end }}
 {{ template "script_footer.tmpl" }}

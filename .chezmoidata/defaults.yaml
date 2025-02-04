@@ -1,0 +1,16 @@
+machine:
+    arch:
+        default: {}
+    host:
+        default: {}
+
+package_manager:
+  default: 
+    command: ""
+    sudo: true
+    install_args: ""
+    update_args: ""
+    pass_packages_via_stdin: false
+    list_template: ""
+    env: {}
+    install_script: ""

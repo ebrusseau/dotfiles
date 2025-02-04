@@ -1,12 +1,11 @@
 {{- /* Checks if running interactively */ -}}
 {{- $interactive := stdinIsATTY -}}
 {{- $tags := promptStringOnce  . "tags" "Tags to add to this configuration (optional)" -}}
-{{- $tagList := splitList "," $tags -}}
+{{- $tagList := $tags | trim | replace " " "," | splitList "," | uniq | compact -}}
 
 data:
-    tags: {{ $tags | trim | quote }}
-    tagList:
-        {{- toYaml $tagList | trim | nindent 8 }}
+  tags: {{ $tags | trim | replace " " "," | quote }}
+  tagList: {{- toYaml $tagList | nindent 4 }}
 
 # hooks:
 #     init:

@@ -1,0 +1,39 @@
+{{ $packages := list -}}
+{{ if (hasKey . "taps") -}}
+{{   range $name, $install := .taps -}}
+{{     if $install -}}
+{{       $packages = append $packages (printf "tap '%s'" $name) -}}
+{{     end -}}
+{{   end -}}
+{{ end -}}
+{{ if (hasKey . "brews") -}}
+{{   range $name, $install := .brews -}}
+{{     if $install -}}
+{{       $packages = append $packages (printf "brew '%s'" $name) -}}
+{{     end -}}
+{{   end -}}
+{{ end -}}
+{{ if (hasKey . "casks") -}}
+{{   range $name, $install := .casks -}}
+{{     if $install -}}
+{{       $packages = append $packages (printf "cask '%s'" $name) -}}
+{{     end -}}
+{{   end -}}
+{{ end -}}
+{{ if (hasKey . "mas") -}}
+{{   range $name, $masData := .mas -}}
+{{     $install := $masData.install | default false -}}
+{{     $id := $masData.id | default 0 -}}
+{{     if (and $install (gt $id 0)) -}}
+{{       $packages = append $packages (printf "mas '%s', id: %d" $name $id) -}}
+{{     end -}}
+{{   end -}}
+{{ end -}}
+{{ if (hasKey . "vscode") -}}
+{{   range $name, $install := .vscode -}}
+{{     if $install -}}
+{{       $packages = append $packages (printf "vscode '%s'" $name) -}}
+{{     end -}}
+{{   end -}}
+{{ end -}}
+{{ toYaml $packages }}
