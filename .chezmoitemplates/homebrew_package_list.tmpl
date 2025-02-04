@@ -1,4 +1,6 @@
 {{ $packages := list -}}
+{{ $os := output "uname" "-s" | trim -}}
+
 {{ if (hasKey . "taps") -}}
 {{   range $name, $install := .taps -}}
 {{     if $install -}}
@@ -6,6 +8,7 @@
 {{     end -}}
 {{   end -}}
 {{ end -}}
+
 {{ if (hasKey . "brews") -}}
 {{   range $name, $install := .brews -}}
 {{     if $install -}}
@@ -13,27 +16,47 @@
 {{     end -}}
 {{   end -}}
 {{ end -}}
+
 {{ if (hasKey . "casks") -}}
-{{   range $name, $install := .casks -}}
-{{     if $install -}}
-{{       $packages = append $packages (printf "cask '%s'" $name) -}}
+{{   if (eq $os "Darwin") -}}
+{{     range $name, $install := .casks -}}
+{{       if $install -}}
+{{         $packages = append $packages (printf "cask '%s'" $name) -}}
+{{       end -}}
 {{     end -}}
+{{   else -}}
+{{     warnf "cask packages are only supported on darwin" -}}
 {{   end -}}
 {{ end -}}
+
 {{ if (hasKey . "mas") -}}
-{{   range $name, $masData := .mas -}}
-{{     $install := $masData.install | default false -}}
-{{     $id := $masData.id | default 0 -}}
-{{     if (and $install (gt $id 0)) -}}
-{{       $packages = append $packages (printf "mas '%s', id: %d" $name $id) -}}
+{{   if (eq $os "Darwin") -}}
+{{     if (output "sysctl" "-a" | regexFind "hv_vmm_present: 1" | empty) -}}
+{{       range $name, $masData := .mas -}}
+{{         $install := $masData.install | default false -}}
+{{         $id := $masData.id | default 0 -}}
+{{         if (and $install (gt $id 0)) -}}
+{{           $packages = append $packages (printf "mas '%s', id: %d" $name $id) -}}
+{{         end -}}
+{{       end -}}
+{{     else -}}
+{{       warnf "mas packages are not supported on virtualized darwin" -}}
 {{     end -}}
+{{   else -}}
+{{     warnf "mas packages are only supported on darwin" -}}
 {{   end -}}
 {{ end -}}
+
 {{ if (hasKey . "vscode") -}}
-{{   range $name, $install := .vscode -}}
-{{     if $install -}}
-{{       $packages = append $packages (printf "vscode '%s'" $name) -}}
+{{   if (eq $os "Darwin") -}}
+{{     range $name, $install := .vscode -}}
+{{       if $install -}}
+{{         $packages = append $packages (printf "vscode '%s'" $name) -}}
+{{       end -}}
 {{     end -}}
+{{   else -}}
+{{     warnf "vscode packages are only supported on darwin" -}}
 {{   end -}}
 {{ end -}}
+
 {{ toYaml $packages }}

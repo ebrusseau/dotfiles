@@ -23,7 +23,7 @@ set -e
 # {{ $packageManagerName }}
 ####
 {{      range $var, $value := $packageManagerOptions.env -}}
-{{        printf "%s=%s" ($var | upper) ($value | quote) }}
+{{        printf "export %s=%s" ($var | upper) $value }}
 {{      end }}
 
 # Check for Package Manager Binary 
