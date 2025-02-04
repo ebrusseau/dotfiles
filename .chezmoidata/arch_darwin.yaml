@@ -33,16 +33,16 @@ machine:
             sourcetree: true
             visual-studio-code: true
           mas:
-            "1Password for Safari":
+            '1Password for Safari':
               id: 1569813296
               install: true
-            "Disk Map":
+            'Disk Map':
               id: 715464874
               install: true
-            "Pixelmator":
+            'Pixelmator':
               id: 407963104
               install: true
-            "Speedtest":
+            'Speedtest':
               id: 1153157709
               install: true
           vscode:

@@ -6,11 +6,11 @@ machine:
 
 package_manager:
   default: 
-    command: ""
+    command: ''
     sudo: true
-    install_args: ""
-    update_args: ""
+    install_args: ''
+    update_args: ''
     pass_packages_via_stdin: false
-    list_template: ""
+    list_template: ''
     env: {}
-    install_script: ""
+    install_script: ''
