@@ -37,8 +37,7 @@ for i in $binaries; do
             unpack_command="$(which tar) -zxvf ${download_dir}/${filename} -C ${download_dir}"
             ;;
         *)
-            echo "ERROR: Unable to unpack ${filename}; cannot handle ${extension} files"
-            exit 1
+            unpack_command="mv ${download_dir}/${filename} ${download_dir}/${binary}"
             ;;
     esac
     
