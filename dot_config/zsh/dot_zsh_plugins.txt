@@ -1,0 +1,36 @@
+#!/bin/zsh
+#
+# .zsh_plugins.txt - antidote plugins file
+#
+
+# Completions
+mattmc3/ez-compinit
+zsh-users/zsh-completions kind:fpath path:src
+aloxaf/fzf-tab
+
+# Completion styles
+#belak/zsh-utils path:completion/functions kind:autoload post:compstyle_zshzoo_setup
+
+# Keybindings
+#belak/zsh-utils path:editor
+
+# History
+zsh-users/zsh-history-substring-search
+
+# Prompt
+romkatv/powerlevel10k
+
+# Utilities
+mattmc3/zshrc.d
+mattmc3/zfunctions
+ohmyzsh/ohmyzsh path:lib/git.zsh
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:plugins/sudo
+ohmyzsh/ohmyzsh path:plugins/brew
+ohmyzsh/ohmyzsh path:plugins/command-not-found
+MichaelAquilina/zsh-you-should-use
+zshzoo/macos conditional:is-macos
+
+# Other Fish-like features
+zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-autosuggestions

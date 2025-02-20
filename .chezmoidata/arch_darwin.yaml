@@ -3,6 +3,8 @@ machine:
     darwin:
       packages:
         homebrew:
+          taps:
+            "homebrew/command-not-found": true
           brews:
             bash: true
             bash-completion@2: true
@@ -16,11 +18,12 @@ machine:
             htop: true
             jq: true
             mas: true
-            neovim: true
+            neovim: true 
             tree: true
             watch: true
             wget: true
             yq: true
+            zsh: true
             zoxide: true
           casks:
             1password: true

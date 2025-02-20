@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+#
+# .zprofile: Execute commands at the start of a login session.
+#
+
+# Disable Session Save/Restore in MacOS Terminal.app
+if [[ "$OSTYPE" == darwin* ]]; then
+  export SHELL_SESSIONS_DISABLE=1
+fi
