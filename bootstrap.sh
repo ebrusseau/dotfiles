@@ -52,7 +52,7 @@ case "$os" in
       echo ""
 
       declare -A osInfo;
-      osInfo[/etc/debian_version]="sudo apt-get update && sudo apt-get install -y git"
+      osInfo[/etc/debian_version]="sudo apt-get update && sudo apt-get install -y git curl"
       osInfo[/etc/alpine-release]="apk"
       osInfo[/etc/centos-release]="yum"
       osInfo[/etc/fedora-release]="dnf"
