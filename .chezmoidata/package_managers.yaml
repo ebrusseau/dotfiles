@@ -35,6 +35,13 @@ package_manager:
         export PATH=${PATH}:${BREW_LOCATION}
       fi
 
+  apk:
+    command: 'apk'
+    sudo: true
+    install_args: 'add --force'
+    update_args: 'update'
+    pass_packages_via_stdin: false
+  
   apt:
     command: 'apt-get'
     sudo: true

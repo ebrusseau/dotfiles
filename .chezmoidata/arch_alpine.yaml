@@ -1,0 +1,19 @@
+machine:
+  arch:
+    alpine:
+      packages:
+        apk:
+          bat: true
+          chezmoi: true
+          fd: true
+          fzf: true
+          git: true
+          git-crypt: true
+          htop: true
+          jq: true
+          neovim: true
+          tree: true
+          wget: true
+          yq: true
+          zsh: true
+          zoxide: true
