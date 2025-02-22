@@ -14,7 +14,7 @@ set -e
 {{     else -}}
 {{       range $packageName, $install := $packageData -}}
 {{         if $install -}}
-{{           $packages append $packages $packageName -}}
+{{           $packages = append $packages $packageName -}}
 {{         end -}}
 {{       end -}}
 {{    end -}}
