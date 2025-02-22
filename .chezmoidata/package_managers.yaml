@@ -18,6 +18,22 @@ package_manager:
           echo "ERROR: Cannot install homebrew without curl or wget." >&2
           exit 1
       fi
+      if [ ! "$(command -v brew)" ]; then
+        if [[ -x /opt/homebrew/bin/brew ]]; then
+          BREW_LOCATION="/opt/homebrew/bin"
+        elif [[ -x /usr/local/bin/brew ]]; then
+          BREW_LOCATION="/usr/local/bin"
+        elif [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+          BREW_LOCATION="/home/linuxbrew/.linuxbrew/bin"
+        elif [[ -x "$HOME/.linuxbrew/bin/brew" ]]; then
+          BREW_LOCATION="$HOME/.linuxbrew/bin"
+        else
+          echo "ERROR: Cannot locate installed homebrew binary!" >&2
+          exit 1
+        fi
+
+        export PATH=${PATH}:${BREW_LOCATION}
+      fi
 
   apt:
     command: 'apt-get'
