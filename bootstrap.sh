@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 repo=${1:-ebrusseau}
 branch=${2:-main}
@@ -15,69 +15,95 @@ case "$os" in
     
     if [ $rc -ne 0 ]; then
       echo "Xcode command line developer tools will now be installed."
-      echo "Please continue the installation from the desktop window."
+      echo "Please enter your password to continue."
+      sudo -v
       echo ""
 
-      echo "Starting installer ..."
-      xcode-select --install  > /dev/null 2>&1
+      clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
+      sudo touch $clt_placeholder
+      trap 'rm -f ${clt_placeholder}' EXIT
       
-      while ! pgrep "Install Command Line Developer Tools" > /dev/null; do
-        sleep 1
-      done
+      echo "Querying software update for available versions ..."
+      clt_label=$(softwareupdate --list | \
+        grep "\* Label" | \
+        grep "Command Line Tools" | \
+        cut -d ' ' -f 3- | \
+        sort -V | \
+        tail -n1)
 
-      echo "Waiting for installer to complete ..."
-      x=0
-      y=2
-      while pgrep "Install Command Line Developer Tools" > /dev/null; do
-        sleep 1
-      done
+      if [ -n "${clt_label}" ]; then
+        echo "Intalling '${clt_label}' via software update ..."
+        echo ""
+        sudo softwareupdate --verbose --install "${clt_label}"
+        sudo xcode-select --switch "/Library/Developer/CommandLineTools"
+        echo ""
+      fi
+      rm -f $clt_placeholder
+
+      xcode-select --print-path  > /dev/null 2>&1
+      rc=$?
+
+      if [ $rc -ne 0 ]; then
+        echo "Please continue the installation from the desktop window."
+        echo ""
+
+        echo "Starting installer ..."
+        xcode-select --install  > /dev/null 2>&1
+        
+        while ! pgrep "Install Command Line Developer Tools" > /dev/null 2>&1; do
+          sleep 1
+        done
+
+        echo "Waiting for installer to complete ..."
+        while pgrep "Install Command Line Developer Tools" > /dev/null 2>&1; do
+          sleep 1
+        done
+      fi
 
       # Test again to make sure install was successful
       xcode-select --print-path > /dev/null 2>&1 
       rc=$?
       
       if [ $rc -ne 0 ]; then
-        echo "Install did not complete. Aborting."
+        echo "Xcode command line developer tools install did not complete. Aborting."
         echo ""
         exit 1
       fi
       
-      echo "Install completed."
+      echo "Xcode command line developer tools install completed."
       echo ""
     fi
     ;;
    Linux*)
-    if [ ! "$(command -v git)" ]; then
-      echo "Git binary not found."
+    required="git curl bash"
+    missing=""
+
+    for r in $required; do
+      [ "$(command -v "$r")" ] || missing="${missing} ${r}"
+    done
+    
+    if [ -n "$missing" ]; then
+      echo "Pre-requisites not found: ${missing}"
       echo ""
 
-      declare -A osInfo;
-      osInfo[/etc/debian_version]="sudo apt-get update && sudo apt-get install -y git curl"
-      osInfo[/etc/alpine-release]="apk"
-      osInfo[/etc/centos-release]="yum"
-      osInfo[/etc/fedora-release]="dnf"
-
       install_command=""
-
-      for f in "${!osInfo[@]}"; do
-        if [[ -f $f ]];then
-          install_command="${osInfo[$f]}"
-          break
-        fi
-      done
+      [ -f /etc/debian_version ] && install_command="sudo apt-get update && sudo apt-get install -y"
+      [ -f /etc/alpine-release ] && install_command="sudo apk update && sudo apk add --force"
+      [ -f /etc/centos-release ] && install_command="sudo yum update && sudo yum install"
+      [ -f /etc/fedora-release ] && install_command="sudo dnf udpate && dnf"
 
       if [ -z "${install_command}" ]; then
-        echo "ERROR: Could not install git. Unknown distribution."
+        echo "ERROR: Could not install pre-requisites. Unknown distribution."
         exit 1
       fi
 
-      echo "Installing git ..."
+      echo "Installing missing pre-requisites ..."
       echo ""
-      sh -c "$install_command"
+      sh -c "${install_command} ${missing}"
       rc=$?
 
       if [ $rc -ne 0 ]; then
-        echo "ERROR: Could not install git. '$install_command' failed."
+        echo "ERROR: Could not install pre-requisites. '$install_command' failed."
         exit 1
       fi
     fi
@@ -94,7 +120,7 @@ if [ ! "$(command -v chezmoi)" ]; then
   purge_bin=1
 
   echo ""
-  echo "Installing chezmoi ..."
+  echo "Fetching temporary chezmoi binary ..."
   mkdir -p "$bin_dir"
   if [ "$(command -v curl)" ]; then
     sh -c "$(curl -fsSL https://git.io/chezmoi)" -- -b "$bin_dir"
