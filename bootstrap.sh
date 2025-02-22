@@ -90,7 +90,7 @@ case "$os" in
       [ -f /etc/debian_version ] && install_command="sudo apt-get update && sudo apt-get install -y"
       [ -f /etc/alpine-release ] && install_command="sudo apk update && sudo apk add --force"
       [ -f /etc/centos-release ] && install_command="sudo yum update && sudo yum install"
-      [ -f /etc/fedora-release ] && install_command="sudo dnf udpate && dnf"
+      [ -f /etc/fedora-release ] && install_command="sudo dnf -y makecache && dnf -y install"
 
       if [ -z "${install_command}" ]; then
         echo "ERROR: Could not install pre-requisites. Unknown distribution."
