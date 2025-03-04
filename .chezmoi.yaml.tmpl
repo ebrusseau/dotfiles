@@ -1,11 +1,12 @@
 {{- /* Checks if running interactively */ -}}
 {{- $interactive := stdinIsATTY -}}
-{{- $tags := promptStringOnce  . "tags" "Tags to add to this configuration (optional)" -}}
-{{- $tagList := $tags | trim | replace " " "," | splitList "," | uniq | compact -}}
+{{- $availableTags := list "Work" "Personal" -}}
+{{- $tags := promptMultichoice  "Select the tags you would like to apply to this machine (optional)"
+    $availableTags (list)
+-}}
 
 data:
-  tags: {{ $tags | trim | replace " " "," | quote }}
-  tagList: {{- toYaml $tagList | nindent 4 }}
+  tags: {{ $tags | toYaml | lower | nindent 4 }}
 
 # hooks:
 #     init:

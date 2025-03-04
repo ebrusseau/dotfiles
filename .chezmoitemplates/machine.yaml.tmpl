@@ -12,7 +12,7 @@
 {{-   $archData = mergeOverwrite $archData (get .machine.arch $archId) -}}
 {{- end -}}
 
-{{- range $tagName := .tagList -}}
+{{- range $tagName := .tags -}}
 {{-   if (hasKey $.tag $tagName) -}}
 {{-     with (get $.tag $tagName) -}}
 {{-       $tagData = mergeOverwrite $tagData (dig "machine" "arch" $archId dict .) -}}
