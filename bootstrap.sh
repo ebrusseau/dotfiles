@@ -21,7 +21,7 @@ case "$os" in
 
       clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
       sudo touch $clt_placeholder
-      trap '[ -f $clt_placeholder ] && rm -f $clt_placeholder' EXIT
+      trap '[ -f $clt_placeholder ] && sudo rm -f $clt_placeholder' EXIT
       
       echo "Querying software update for available versions ..."
       clt_label=$(softwareupdate --list | \
@@ -34,8 +34,7 @@ case "$os" in
       if [ -n "${clt_label}" ]; then
         echo "Intalling '${clt_label}' via software update ..."
         echo ""
-        sudo softwareupdate --verbose --download "${clt_label}"
-        sudo softwareupdate --no-scan --install --agree-to-license "${clt_label}"
+        sudo softwareupdate --verbose --install --agree-to-license "${clt_label}"
         sudo xcode-select --switch "/Library/Developer/CommandLineTools"
         echo ""
       fi
