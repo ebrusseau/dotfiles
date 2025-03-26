@@ -15,7 +15,7 @@ package_manager:
       sudo -v
       echo ""
       
-      NONINTERACTIVE=1
+      export NONINTERACTIVE=1
       if [ "$(command -v curl)" ]; then
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       elif [ "$(command -v wget)" ]; then
