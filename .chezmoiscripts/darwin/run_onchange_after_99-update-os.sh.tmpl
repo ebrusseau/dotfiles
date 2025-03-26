@@ -7,30 +7,31 @@ set -e
 echo "Checking for OS updates ..."
 OLD_IFS="$IFS"
 IFS=$'\n'
+INSTALL=0
 available=(
     $(softwareupdate --list --product-types macOS,Safari 2> /dev/null | grep "* Label"  | cut -d ' ' -f 3-)
 )
 
 echo "There are ${#available[@]} updates to install."
 echo ""
-
 if [ "${#available[@]}" -gt 0 ]; then
-    echo "Downloading udpates ..."
-    for update in "${available[@]}"; do
-        softwareupdate --verbose --download "${update}"
-        echo ""
-    done
-
     while true; do
         read -p "Install updates and restart now (y/n)?" yn
         case $yn in
-            [Yy]*) break ;;
-            [Nn]*) clear; exit ;;
+            [Yy]*) INSTALL=1; break ;;
+            [Nn]*) INSTALL=0; break ;;
             *) echo "Please answer (y)es or (n)o." ;;
         esac
     done
-    echo "Installing updates ..."
-    sudo softwareupdate --no-scan --install --product-types macOS,Safari --restart --agree-to-license
+
+    if [ $INSTALL -eq 1 ]; then
+        echo "Downloading udpates ..."
+        for update in "${available[@]}"; do
+            softwareupdate --verbose --download "${update}"
+        done
+        sudo softwareupdate --verbose --no-scan --install --product-types macOS,Safari --restart --agree-to-license
+    fi
 fi
+
 sIFSIFS=$OLD_IFS
 {{ template "script_footer.tmpl" }}
