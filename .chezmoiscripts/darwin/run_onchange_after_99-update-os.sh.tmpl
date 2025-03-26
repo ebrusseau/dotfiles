@@ -21,10 +21,16 @@ if [ "${#available[@]}" -gt 0 ]; then
         echo ""
     done
 
-    if $(gum confirm "Install updates and restart now?"); then
-        echo "Installing updates ..."
-        sudo softwareupdate --no-scan --install "${available[@]}" --restart --agree-to-license
-    fi
+    while true; do
+        read -p "Install updates and restart now (y/n)?" yn
+        case $yn in
+            [Yy]*) break ;;
+            [Nn]*) clear; exit ;;
+            *) echo "Please answer (y)es or (n)o." ;;
+        esac
+    done
+    echo "Installing updates ..."
+    sudo softwareupdate --no-scan --install --product-types macOS,Safari --restart --agree-to-license
 fi
-IFS=$OLD_IFS
+sIFSIFS=$OLD_IFS
 {{ template "script_footer.tmpl" }}

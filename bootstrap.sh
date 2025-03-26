@@ -38,7 +38,7 @@ case "$os" in
         sudo xcode-select --switch "/Library/Developer/CommandLineTools"
         echo ""
       fi
-      rm -f $clt_placeholder
+      rm -f "${clt_placeholder}"
 
       xcode-select --print-path  > /dev/null 2>&1
       rc=$?
