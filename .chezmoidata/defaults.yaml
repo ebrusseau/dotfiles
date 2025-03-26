@@ -1,8 +1,10 @@
 machine:
     arch:
-        default: {}
+        default:
+          packages: {}
     host:
-        default: {}
+        default:
+          packages: {}
 
 package_manager:
   default: 

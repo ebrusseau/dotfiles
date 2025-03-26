@@ -3,7 +3,7 @@ package_manager:
   homebrew:
     command: 'brew'
     sudo: false
-    install_args: 'bundle install --no-upgrade --no-lock --verbose --file=/dev/stdin'
+    install_args: 'bundle install --no-upgrade --file=/dev/stdin'
     update_args: 'update'
     pass_packages_via_stdin: true
     list_template: 'homebrew_package_list.tmpl'

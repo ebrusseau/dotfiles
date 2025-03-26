@@ -38,7 +38,7 @@ if [ ! "$(command -v '{{- $packageManagerOptions.command -}}')" ]; then
 {{      if not (empty $packageManagerOptions.update_args) -}}
 else
     # Update Package Manager/Cache
-    echo "Updating {{ $packageManagerName }} ..."
+    echo "Running update command for package manager: {{ $packageManagerName }}"
     {{    printf "%s%s %s" $sudo $packageManagerOptions.command $packageManagerOptions.update_args -}}
 {{      end }}
 fi

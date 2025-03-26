@@ -1,0 +1,18 @@
+# Fuzzy Azure account switch
+function faz() {
+  # query='[].{name: name, subscriptionId: id}'
+  local account="$(az account list -o table \
+    --query '[].{tenant: tenantDisplayName, name: name, subscriptionId: id}' | \
+    fzf --header-lines=2 --nth='1,2' \
+        --height="50%" \
+        --min-height=17 \
+        --preview='az account show -s {-1} -o json | jq -C' \
+      | rev | cut -d' ' -f1 | rev
+  )"
+  if [[ -n $account ]]; then
+    az account set --subscription $account
+  else
+    echo "account unchanged"
+  fi
+  az account show
+}
