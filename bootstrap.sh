@@ -34,7 +34,8 @@ case "$os" in
       if [ -n "${clt_label}" ]; then
         echo "Intalling '${clt_label}' via software update ..."
         echo ""
-        sudo softwareupdate --verbose --install "${clt_label}"
+        sudo softwareupdate --verbose --download "${clt_label}"
+        sudo softwareupdate --no-scan --install --agree-to-license "${clt_label}"
         sudo xcode-select --switch "/Library/Developer/CommandLineTools"
         echo ""
       fi
