@@ -31,16 +31,12 @@
 
 {{ if (hasKey . "mas") -}}
 {{   if (eq $os "Darwin") -}}
-{{     if (output "sysctl" "-a" | regexFind "hv_vmm_present: 1" | empty) -}}
-{{       range $name, $masData := .mas -}}
-{{         $install := $masData.install | default false -}}
-{{         $id := $masData.id | default 0 -}}
-{{         if (and $install (gt $id 0)) -}}
-{{           $packages = append $packages (printf "mas '%s', id: %d" $name $id) -}}
-{{         end -}}
+{{     range $name, $masData := .mas -}}
+{{       $install := $masData.install | default false -}}
+{{       $id := $masData.id | default 0 -}}
+{{       if (and $install (gt $id 0)) -}}
+{{         $packages = append $packages (printf "mas '%s', id: %d" $name $id) -}}
 {{       end -}}
-{{     else -}}
-{{       warnf "mas packages are not supported on virtualized darwin" -}}
 {{     end -}}
 {{   else -}}
 {{     warnf "mas packages are only supported on darwin" -}}
