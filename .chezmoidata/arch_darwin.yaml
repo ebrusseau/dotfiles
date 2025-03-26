@@ -36,8 +36,8 @@ machine:
             font-jetbrains-mono-nerd-font: true
             font-symbols-only-nerd-font: true
             google-chrome: true
-            sourcetree: false
             visual-studio-code: true
+            wezterm: true
           mas:
             1Password for Safari:
               id: 1569813296
