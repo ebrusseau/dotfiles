@@ -13,6 +13,9 @@ available=(
 )
 
 echo "There are ${#available[@]} updates to install."
+for update in "${available[@]}"; do
+    echo "  ${update}"
+done
 echo ""
 if [ "${#available[@]}" -gt 0 ]; then
     while true; do
