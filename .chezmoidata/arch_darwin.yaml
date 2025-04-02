@@ -1,6 +1,55 @@
 machine:
   arch:
     darwin:
+      dock:
+        apps:
+        - Safari
+        - Messages
+        - Mail
+        - Calendar
+        - Reminders
+        - Notes
+        - Ghostty
+        other:
+        - label: Applications
+          path: /Applications
+          sort: name
+          display: folder
+          view: grid
+        - label: Documents
+          path: ~/Documents
+          sort: name
+          display: folder
+          view: grid
+        - label: Downloads
+          path: ~/Downloads
+          sort: name
+          display: folder
+          view: grid
+        # apps:
+        #   Launchpad: false
+        #   Safari: true
+        #   Messages: true
+        #   Mail: true
+        #   Maps: false
+        #   Photos: false
+        #   FaceTime: false
+        #   Calendar: true
+        #   Contacts: false
+        #   Reminders: true
+        #   Notes: true
+        #   Freeform: false
+        #   TV: false
+        #   Music: false
+        #   News: false
+        #   App Store: false
+        #   System Settings: false
+        #   iPhone Mirroring: false
+        #   Keynote: false
+        #   Numbers: false
+        #   Pages: false
+        #   Ghostty: true
+
       packages:
         homebrew:
           taps:

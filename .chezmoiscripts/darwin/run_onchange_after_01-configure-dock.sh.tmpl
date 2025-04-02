@@ -1,0 +1,75 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{ template "script_header.tmpl" }}
+{{ $machine := (fromYaml (includeTemplate "machine.yaml.tmpl" .)) -}}
+
+echo "Configuring dock ..."
+
+if [[ -z "$(command -v dockutil)" ]]; then
+  echo "dockutil is not installed"
+  exit 1
+fi
+
+# $1 name of app
+function getAppPath {
+  app_name="$1"
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister" -dump \
+      | grep -o "/.*${app_name}.app" \
+      | grep -v -E "Caches|TimeMachine|Temporary|/Volumes/${app_name}" \
+      | uniq \
+      | head -1
+}
+
+# $1 name of app
+function addApp {
+  app_name="$1"
+  
+  echo -n "Looking for ${app_name}" 
+  app_path="$(getAppPath $app_name)"
+  if [ -z "$app_path" ]; then
+    echo " - not found"
+  else
+    echo " - found"
+    dockutil --no-restart --add "${app_path}" --label "${app_name}"
+  fi
+}
+
+# $1 name of app
+function removeApp {
+  app_name="$1"
+
+  echo -n "Removing ${app_name}"
+  dockutil --find "${app_name}" > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    dockutil --no-restart --remove "${app_name}" > /dev/null 2>&1
+    echo " - removed"
+  else
+    echo " - not found"
+  fi
+}
+
+trap 'killall Dock' EXIT
+
+echo "Clearing existing items..."
+dockutil --no-restart --remove all
+
+{{ $dockData := default dict (get $machine "dock") -}}
+{{ if (hasKey $dockData "apps") -}}
+{{   range $index, $appName := get $dockData "apps" -}}
+addApp "{{ $appName }}"
+{{   end -}}
+{{ end -}}
+{{ if (hasKey $dockData "other") -}}
+{{   range $index, $otherData := get $dockData "other" -}}
+dockutil --no-restart \
+  --add "{{ $otherData.path }}" \
+  --sort {{ $otherData.sort }} \
+  --display {{ $otherData.display }} \
+  --view {{ $otherData.view }}
+{{   end -}}
+{{ end -}}
+
+
+{{ template "script_footer.tmpl" }}
