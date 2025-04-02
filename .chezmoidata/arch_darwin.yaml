@@ -25,8 +25,8 @@ machine:
             watch: true
             wget: true
             yq: true
-            zsh: true
             zoxide: true
+            zsh: true
           casks:
             1password: true
             1password-cli: true
@@ -36,9 +36,9 @@ machine:
             font-hack-nerd-font: true
             font-jetbrains-mono-nerd-font: true
             font-symbols-only-nerd-font: true
+            ghostty: true
             google-chrome: true
             visual-studio-code: true
-            ghostty: true
             wezterm: true
           mas:
             1Password for Safari:
