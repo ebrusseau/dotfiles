@@ -38,6 +38,7 @@ machine:
             font-symbols-only-nerd-font: true
             google-chrome: true
             visual-studio-code: true
+            ghostty: true
             wezterm: true
           mas:
             1Password for Safari:
