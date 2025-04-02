@@ -6,6 +6,7 @@ machine:
           taps:
             homebrew/command-not-found: true
           brews:
+            antidote: true
             bash: true
             bash-completion@2: true
             bat: true
@@ -48,7 +49,7 @@ machine:
             Pixelmator:
               id: 407963104
               install: true
-            Speedtests:
+            Speedtest:
               id: 1153157709
               install: true
           vscode:

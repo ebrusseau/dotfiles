@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 #
 # .zprofile: Execute commands at the start of a login session.
 #

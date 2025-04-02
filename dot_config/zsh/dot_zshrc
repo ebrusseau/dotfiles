@@ -1,7 +1,17 @@
-#!/bin/zsh
 #
 # .zshrc: Execute commands at the start of an interactive session.
 #
+
+# Install antidote
+if [[ "$(command -v brew)" ]]; then
+  ANTIDOTE_PATH=$(brew --prefix antidote)/share/antidote/antidote.zsh
+else
+  ANTIDOTE_PATH=${XDG_DATA_HOME}/antidote/antidote.zsh
+  if [[ ! -d $ANTIDOTE_PATH ]]; then
+    git clone --depth 1 https://github.com/mattmc3/antidote "$(dirname "$ANTIDOTE_PATH")"
+  fi
+fi
+
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.config/zsh/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -10,14 +20,13 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Clone antidote if necessary
-if [[ ! -d ${ZDOTDIR:-$HOME}/.antidote ]]; then
-  git clone --depth 1 https://github.com/mattmc3/antidote ${ZDOTDIR:-$HOME}/.antidote
+# Load antidote
+if [[ -f $ANTIDOTE_PATH ]]; then
+  source "$ANTIDOTE_PATH"
+  antidote load
+else 
+  echo Could not find antidote.
 fi
 
-# Source/load antidote
-source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
-antidote load
-
 # Set zstyles as required
-[[ ! -f ${ZDOTDIR:-$HOME}/.zstyles ]] || source ${ZDOTDIR:-$HOME}/.zstyles
+[[ ! -f ${ZDOTDIR:-$HOME}/.zstyles ]] || source "${ZDOTDIR:-$HOME}/.zstyles"
