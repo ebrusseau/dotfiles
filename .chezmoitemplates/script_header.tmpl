@@ -1,5 +1,108 @@
-script_name="$(basename ${BASH_SOURCE})"
-script_pid="${script_name%%.*}"
+# Regular Colors
+BK=$(echo "\033[0;30m")
+RD=$(echo "\033[0;31m")
+GN=$(echo "\033[0;32m")
+YW=$(echo "\033[0;33m")
+BL=$(echo "\033[0;34m")
+MG=$(echo "\033[0;35m")
+CY=$(echo "\033[0;36m")
+WH=$(echo "\033[0;37m")
+
+# Bold Colors
+BBK=$(echo "\033[1;30m")
+BRD=$(echo "\033[1;31m")
+BGN=$(echo "\033[1;32m")
+BYW=$(echo "\033[1;33m")
+BBL=$(echo "\033[1;34m")
+BMG=$(echo "\033[1;35m")
+BCY=$(echo "\033[1;36m")
+BWH=$(echo "\033[1;37m")
+
+# Underlined Colors
+UBK=$(echo "\033[4;30m")
+URD=$(echo "\033[4;31m")
+UGN=$(echo "\033[4;32m")
+UYW=$(echo "\033[4;33m")
+UBL=$(echo "\033[4;34m")
+UMG=$(echo "\033[4;35m")
+UCY=$(echo "\033[4;36m")
+UWH=$(echo "\033[4;37m")
+
+# High Intensity
+HBK=$(echo "\033[0;90m")
+HRD=$(echo "\033[0;91m")
+HGN=$(echo "\033[0;92m")
+HYW=$(echo "\033[0;93m")
+HBL=$(echo "\033[0;94m")
+HMG=$(echo "\033[0;95m")
+HCY=$(echo "\033[0;96m")
+HWH=$(echo "\033[0;97m")
+
+# Bold High Intensity
+BHBK=$(echo "\033[1;90m")
+BHRD=$(echo "\033[1;91m")
+BHGN=$(echo "\033[1;92m")
+BHYW=$(echo "\033[1;93m")
+BHBL=$(echo "\033[1;94m")
+BHMG=$(echo "\033[1;95m")
+BHCY=$(echo "\033[1;96m")
+BHWH=$(echo "\033[1;97m")
+
+# Special Sequences
+CLR=$(echo "\033[m")
+BFR="\\r\\033[K"
+HOLD=" "
+CHECK="${BHGN}✓${CLR}"
+CROSS="${BHRD}✗${CLR}"
+WARN="${BHYW}⚠${CLR}"
+SPINNER_PID=""
+
+# Script Data
+SCRIPT_NAME="$(basename ${BASH_SOURCE})"
+SCRIPT_PID="${SCRIPT_NAME%%.*}"
+
+# Functions
+
+function spinner() {
+  local chars="/-\|"
+  local spin_i=0
+  printf "\e[?25l"
+  while true; do
+    printf "\r \e[0;36m%s\e[0m" "${chars:spin_i++%${#chars}:1}"
+    sleep 0.1
+  done
+}
+
+function msg_wait() {
+  local msg="$1"
+  echo -ne " ${HOLD} ${BL}${msg}   "
+  spinner &
+  SPINNER_PID=$!
+}
+
+function msg_ok() {
+  if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID >/dev/null; then kill $SPINNER_PID >/dev/null; fi
+  printf "\e[?25h"
+  local msg="$1"
+  local cr_arg=""
+  [ "$2" == "nocr" ] && cr_arg="n"
+  echo -${cr_arg}e "${BFR} ${CHECK} ${GN}${msg}${CLR}"
+}
+
+function msg_warn() {
+  if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID >/dev/null; then kill $SPINNER_PID >/dev/null; fi
+  printf "\e[?25h"
+  local msg="$1"
+  echo -e "${BFR} ${WARN} ${YW}${msg}${CLR}"
+}
+
+function msg_error() {
+  if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID >/dev/null; then kill $SPINNER_PID >/dev/null; fi
+  printf "\e[?25h"
+  local msg="$1"
+  echo -e "${BFR} ${CROSS} ${RD}${msg}${CLR}"
+}
+
 echo ""
-echo "[$(basename ${BASH_SOURCE})] Start"
+echo -e "${BHWH}[${BL}${SCRIPT_NAME}${BHWH}]${GN} Start${CLR}"
 echo ""

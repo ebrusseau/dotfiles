@@ -1,11 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eufo pipefail
 
 {{ template "script_header.tmpl" }}
 {{ $machine := (fromYaml (includeTemplate "machine.yaml.tmpl" .)) -}}
-
-echo "Configuring dock ..."
 
 if [[ -z "$(command -v dockutil)" ]]; then
   echo "dockutil is not installed"
@@ -14,62 +12,116 @@ fi
 
 # $1 name of app
 function getAppPath {
-  app_name="$1"
-    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister" -dump \
-      | grep -o "/.*${app_name}.app" \
-      | grep -v -E "Caches|TimeMachine|Temporary|/Volumes/${app_name}" \
-      | uniq \
-      | head -1
+  local app_name="$1"
+  local app_path=""
+  
+  mapfile -t results < <( "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister" -dump \
+    | grep -o "/.*${app_name}.app" \
+    | grep -v -E "Caches|TimeMachine|Temporary|/Volumes/${app_name}" \
+    | uniq )
+  
+  for result in "${results[@]}"; do
+    if [ "$(basename "$result" .app)" == "$app_name" ]; then
+      app_path="$result"
+      break
+    fi
+  done
+
+  printf "$app_path"
 }
 
 # $1 name of app
+# $2 position
 function addApp {
-  app_name="$1"
+  local app_name="$1"
+  local position=${2:-end}
   
-  echo -n "Looking for ${app_name}" 
-  app_path="$(getAppPath $app_name)"
+  msg_wait "Looking for application \"${app_name}\""
+  local app_path="$(getAppPath "$app_name")"
+
   if [ -z "$app_path" ]; then
-    echo " - not found"
+    msg_error "Application \"${app_name}\" was not found and cannot be added"
   else
-    echo " - found"
-    dockutil --no-restart --add "${app_path}" --label "${app_name}"
+    msg_ok "Found application \"${app_name}\": " nocr
+    dockutil --no-restart \
+      --add "${app_path}" \
+      --label "${app_name}" \
+      --section apps \
+      --position $position
   fi
 }
 
-# $1 name of app
-function removeApp {
-  app_name="$1"
+# $1 label
+# $2 path to items
+# $3 position
+# $4 sort
+# $5 display
+# $6 view
+function addOther {
+  local label="$1"
+  local path="$2"
+  local position=${3:-end}
+  local sort=$4
+  local display=$5
+  local view=$6
 
-  echo -n "Removing ${app_name}"
-  dockutil --find "${app_name}" > /dev/null 2>&1
-  if [ $? -eq 0 ]; then
-    dockutil --no-restart --remove "${app_name}" > /dev/null 2>&1
-    echo " - removed"
+  msg_wait "Validating item \"${label}\""
+  if [ -d "$path" ]; then
+    msg_ok "Item \"${label}\" is valid: " nocr
+    dockutil --no-restart \
+      --add "$path" \
+      --label "$label" \
+      --section others \
+      --position $position \
+      --sort $sort \
+      --display $display \
+      --view $view
   else
-    echo " - not found"
+    msg_error "Item \"${label}\" is invalid: path ${path} not found"
+  fi
+}
+
+# $1 label
+function removeItem {
+  local label="$1"
+
+  msg_wait "Looking for docked item with label \"${label}\""
+  dockutil --find "${label}" > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    msg_ok "Found item with label \"${label}\" in dock: " nocr
+    dockutil --no-restart --remove "${app_name}"
+    echo "Removed"
+  else
+    msg_warn "Item with label \"${label}\" not found in dock"
   fi
 }
 
 trap 'killall Dock' EXIT
 
-echo "Clearing existing items..."
+echo "Clearing existing dock items ..."
 dockutil --no-restart --remove all
 
+echo "Processing application items ..."
 {{ $dockData := default dict (get $machine "dock") -}}
 {{ if (hasKey $dockData "apps") -}}
-{{   range $index, $appName := get $dockData "apps" -}}
-addApp "{{ $appName }}"
-{{   end -}}
-{{ end -}}
-{{ if (hasKey $dockData "other") -}}
-{{   range $index, $otherData := get $dockData "other" -}}
-dockutil --no-restart \
-  --add "{{ $otherData.path }}" \
-  --sort {{ $otherData.sort }} \
-  --display {{ $otherData.display }} \
-  --view {{ $otherData.view }}
+{{   range $label, $position := get $dockData "apps" -}}
+{{     if gt $position 0 -}}
+addApp "{{ $label }}" {{ $position }}
+{{     else -}}
+removeItem "{{ $label }}"
+{{     end -}}
 {{   end -}}
 {{ end -}}
 
+echo "Processing other items ..."
+{{ if (hasKey $dockData "others") -}}
+{{   range $label, $otherData := get $dockData "others" -}}
+{{     if gt $otherData.position 0 -}}
+addOther "{{ $label }}" "{{ $otherData.path }}" {{ $otherData.position }} {{ $otherData.sort }} {{ $otherData.display }} {{ $otherData.view }}
+{{     else -}}
+removeItem "{{ $label }}"
+{{     end -}}
+{{   end -}}
+{{ end }}
 
 {{ template "script_footer.tmpl" }}

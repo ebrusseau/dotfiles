@@ -3,29 +3,32 @@ machine:
     darwin:
       dock:
         apps:
-        - Safari
-        - Messages
-        - Mail
-        - Calendar
-        - Reminders
-        - Notes
-        - Ghostty
-        other:
-        - label: Applications
-          path: /Applications
-          sort: name
-          display: folder
-          view: grid
-        - label: Documents
-          path: ~/Documents
-          sort: name
-          display: folder
-          view: grid
-        - label: Downloads
-          path: ~/Downloads
-          sort: name
-          display: folder
-          view: grid
+          Safari: 1
+          Messages: 2
+          Mail: 3
+          Calendar: 4
+          Reminders: 5
+          Notes: 6
+          Ghostty: 7
+        others:
+          Applications:
+            path: /Applications
+            sort: name
+            display: folder
+            view: grid
+            position: 1
+          Documents:
+            path: ~/Documents
+            sort: name
+            display: folder
+            view: grid
+            position: 2
+          Downloads:
+            path: ~/Downloads
+            sort: name
+            display: folder
+            view: grid
+            position: 3
         # apps:
         #   Launchpad: false
         #   Safari: true
