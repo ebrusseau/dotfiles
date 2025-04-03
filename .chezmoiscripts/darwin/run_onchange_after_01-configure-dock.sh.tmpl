@@ -104,22 +104,38 @@ dockutil --no-restart --remove all
 echo "Processing application items ..."
 {{ $dockData := default dict (get $machine "dock") -}}
 {{ if (hasKey $dockData "apps") -}}
-{{   range $label, $position := get $dockData "apps" -}}
-{{     if gt $position 0 -}}
-addApp "{{ $label }}" {{ $position }}
+{{   $sortedApps := list }}
+{{   range $label, $appData := get $dockData "apps" -}}
+{{     if not (hasKey $appData "label") -}}
+{{       $appData = set $appData "label" $label -}}
+{{     end -}}
+{{     $sortedApps = append $sortedApps $appData -}}
+{{   end -}}
+{{   $sortedApps = $sortedApps | jq "sort_by(.position) | .[]" }}
+{{   range $_, $appData := $sortedApps -}}
+{{     if gt $appData.position 0 -}}
+addApp "{{ $appData.label }}" {{ $appData.position }}
 {{     else -}}
-removeItem "{{ $label }}"
+removeItem "{{ $appData.label }}"
 {{     end -}}
 {{   end -}}
 {{ end -}}
 
 echo "Processing other items ..."
 {{ if (hasKey $dockData "others") -}}
+{{   $sortedOthers := list }}
 {{   range $label, $otherData := get $dockData "others" -}}
+{{     if not (hasKey $otherData "label") -}}
+{{       $otherData = set $otherData "label" $label -}}
+{{     end -}}
+{{     $sortedOthers = append $sortedOthers $otherData -}}
+{{   end -}}
+{{   $sortedOthers = $sortedOthers | jq "sort_by(.position) | .[]" }}
+{{   range $_, $otherData := $sortedOthers -}}
 {{     if gt $otherData.position 0 -}}
-addOther "{{ $label }}" "{{ $otherData.path }}" {{ $otherData.position }} {{ $otherData.sort }} {{ $otherData.display }} {{ $otherData.view }}
+addOther "{{ $otherData.label }}" "{{ $otherData.path }}" {{ $otherData.position }} {{ $otherData.sort }} {{ $otherData.display }} {{ $otherData.view }}
 {{     else -}}
-removeItem "{{ $label }}"
+removeItem "{{ $otherData.label }}"
 {{     end -}}
 {{   end -}}
 {{ end }}

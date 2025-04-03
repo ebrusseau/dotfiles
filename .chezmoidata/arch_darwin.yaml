@@ -3,13 +3,20 @@ machine:
     darwin:
       dock:
         apps:
-          Safari: 1
-          Messages: 2
-          Mail: 3
-          Calendar: 4
-          Reminders: 5
-          Notes: 6
-          Ghostty: 7
+          Safari:
+            position: 1
+          Messages:
+            position: 2
+          Mail:
+            position: 3
+          Calendar:
+            position: 4
+          Reminders:
+            position: 5
+          Notes:
+            position: 6
+          Ghostty:
+            position: 7
         others:
           Applications:
             path: /Applications
