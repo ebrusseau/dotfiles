@@ -36,10 +36,6 @@ machine:
             display: folder
             view: grid
             position: 3
-          Test Folder:
-            path: ~/Test Folder
-            label: My Test Folder
-            position: 0
 
       packages:
         homebrew:
@@ -91,6 +87,7 @@ machine:
               id: 1153157709
               install: true
           vscode:
+            casualjim.gotemplate: true
             docker.docker: true
             golang.go: true
             redhat.vscode-yaml: true
