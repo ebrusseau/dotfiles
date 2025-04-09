@@ -16,7 +16,7 @@ machine:
           Notes:
             position: 6
           Ghostty:
-            position: 7
+            position: end
         others:
           Applications:
             path: /Applications
@@ -36,29 +36,10 @@ machine:
             display: folder
             view: grid
             position: 3
-        # apps:
-        #   Launchpad: false
-        #   Safari: true
-        #   Messages: true
-        #   Mail: true
-        #   Maps: false
-        #   Photos: false
-        #   FaceTime: false
-        #   Calendar: true
-        #   Contacts: false
-        #   Reminders: true
-        #   Notes: true
-        #   Freeform: false
-        #   TV: false
-        #   Music: false
-        #   News: false
-        #   App Store: false
-        #   System Settings: false
-        #   iPhone Mirroring: false
-        #   Keynote: false
-        #   Numbers: false
-        #   Pages: false
-        #   Ghostty: true
+          Test Folder:
+            path: ~/Test Folder
+            label: My Test Folder
+            position: 0
 
       packages:
         homebrew:
@@ -106,11 +87,12 @@ machine:
             Disk Map:
               id: 715464874
               install: true
-            Pixelmator:
-              id: 407963104
-              install: true
             Speedtest:
               id: 1153157709
               install: true
           vscode:
+            docker.docker: true
+            golang.go: true
             redhat.vscode-yaml: true
+            tamasfe.even-better-toml: true
+            vscode-icons-team.vscode-icons: true
