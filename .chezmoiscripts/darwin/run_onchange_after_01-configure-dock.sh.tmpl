@@ -6,7 +6,7 @@ set -eufo pipefail
 {{ $machine := (fromYaml (includeTemplate "machine.yaml.tmpl" .)) -}}
 
 if [[ -z "$(command -v dockutil)" ]]; then
-  echo "dockutil is not installed"
+  msg_error "dockutil is not installed"
   exit 1
 fi
 
@@ -37,47 +37,72 @@ function addApp {
   local position=${2:-end}
   
   msg_wait "Looking for application \"${app_name}\""
-  local app_path="$(getAppPath "$app_name")"
+  local app_path=$(getAppPath "$app_name")
 
   if [ -z "$app_path" ]; then
-    msg_error "Application \"${app_name}\" was not found and cannot be added"
+    msg_error "Could not find an application named \"${app_name}\""
   else
-    msg_ok "Found application \"${app_name}\": " nocr
     dockutil --no-restart \
       --add "${app_path}" \
       --label "${app_name}" \
       --section apps \
-      --position $position
+      --position $position > /dev/null 2>&1
+
+    if [ $? -eq 0 ]; then
+      local slot="$(dockutil --find "${app_name}" | grep "was found" | awk -F" " '{ print $(NF-2) }')"
+      msg_ok "Added application to dock @ slot ${slot}: \"${app_name}\""
+    else
+      msg_error "Could not add applicaiton \"${app_name}\"; docktuil returned error"
+    fi
   fi
 }
 
 # $1 label
-# $2 path to items
+# $2 path to item
 # $3 position
 # $4 sort
 # $5 display
 # $6 view
 function addOther {
   local label="$1"
-  local path="$2"
+  local path="${2/#\~/$HOME}"
   local position=${3:-end}
   local sort=$4
   local display=$5
   local view=$6
+  local type
+  local du_result
 
-  msg_wait "Validating item \"${label}\""
-  if [ -d "$path" ]; then
-    msg_ok "Item \"${label}\" is valid: " nocr
-    dockutil --no-restart \
-      --add "$path" \
-      --label "$label" \
-      --section others \
-      --position $position \
-      --sort $sort \
-      --display $display \
-      --view $view
+  msg_wait "Looking for item \"${label}\""
+  if [ -e "$path" ]; then
+    if [ -d "$path" ]; then
+      type="folder"
+      dockutil --no-restart \
+        --add "${path}" \
+        --label "${label}" \
+        --section others \
+        --position $position \
+        --sort $sort \
+        --display $display \
+        --view $view > /dev/null 2>&1
+      du_result=$?
+    elif [ -f "$path" ]; then
+      type="file"
+      dockutil --no-restart \
+        --add "${path}" \
+        --label "${label}" \
+        --section others \
+        --position $position > /dev/null 2>&1
+      du_result=$?
+    fi
+    if [ $du_result -eq 0 ]; then
+      local slot="$(dockutil --find "${label}" | grep "was found" | awk -F" " '{ print $(NF-2) }')"
+      msg_ok "Added ${type} to dock @ slot ${slot}: \"${label}\""
+    else
+      msg_error "Could not add ${type} \"${label}\"; docktuil returned error"
+    fi
   else
-    msg_error "Item \"${label}\" is invalid: path ${path} not found"
+    msg_error "Item \"${label}\" type is not a file or directory"
   fi
 }
 
@@ -96,22 +121,31 @@ function removeItem {
   fi
 }
 
-trap 'killall Dock' EXIT
+trap 'kill_spinner && killall Dock' EXIT
+
+{{ $dockData := default dict (get $machine "dock") -}}
 
 echo "Clearing existing dock items ..."
 dockutil --no-restart --remove all
 
 echo "Processing application items ..."
-{{ $dockData := default dict (get $machine "dock") -}}
 {{ if (hasKey $dockData "apps") -}}
-{{   $sortedApps := list }}
+{{   $sortedApps := list -}}
+{{   $unsortedApps := list -}}
 {{   range $label, $appData := get $dockData "apps" -}}
 {{     if not (hasKey $appData "label") -}}
 {{       $appData = set $appData "label" $label -}}
 {{     end -}}
-{{     $sortedApps = append $sortedApps $appData -}}
+{{     if not (hasKey $appData "position") -}}
+{{       $appData = set $appData "position" "end" -}}
+{{     end -}}
+{{     if (kindIs "string" $appData.position) -}}
+{{       $unsortedApps = append $unsortedApps $appData -}}
+{{     else -}}
+{{       $sortedApps = append $sortedApps $appData -}}
+{{     end -}}
 {{   end -}}
-{{   $sortedApps = $sortedApps | jq "sort_by(.position) | .[]" }}
+{{   $sortedApps = $sortedApps | jq "sort_by(.position) | .[]" -}}
 {{   range $_, $appData := $sortedApps -}}
 {{     if gt $appData.position 0 -}}
 addApp "{{ $appData.label }}" {{ $appData.position }}
@@ -119,24 +153,46 @@ addApp "{{ $appData.label }}" {{ $appData.position }}
 removeItem "{{ $appData.label }}"
 {{     end -}}
 {{   end -}}
+{{   range $_, $appData := $unsortedApps -}}
+addApp "{{ $appData.label }}" {{ $appData.position }}
+{{   end -}}
 {{ end -}}
-
-echo "Processing other items ..."
+echo "Processing file / folder items ..."
 {{ if (hasKey $dockData "others") -}}
-{{   $sortedOthers := list }}
+{{   $sortedOthers := list -}}
+{{   $unsortedOthers := list -}}
 {{   range $label, $otherData := get $dockData "others" -}}
 {{     if not (hasKey $otherData "label") -}}
 {{       $otherData = set $otherData "label" $label -}}
 {{     end -}}
-{{     $sortedOthers = append $sortedOthers $otherData -}}
+{{     if not (hasKey $otherData "position") -}}
+{{       $otherData = set $otherData "position" "end" -}}
+{{     end -}}
+{{     if not (hasKey $otherData "sort") -}}
+{{       $otherData = set $otherData "sort" "datemodified" -}}
+{{     end -}}
+{{     if not (hasKey $otherData "display") -}}
+{{       $otherData = set $otherData "display" "folder" -}}
+{{     end -}}
+{{     if not (hasKey $otherData "view") -}}
+{{       $otherData = set $otherData "view" "auto" -}}
+{{     end -}}
+{{     if (kindIs "string" $otherData.position) -}}
+{{       $unsortedOthers = append $unsortedOthers $otherData -}}
+{{     else -}}
+{{       $sortedOthers = append $sortedOthers $otherData -}}
+{{     end -}}
 {{   end -}}
-{{   $sortedOthers = $sortedOthers | jq "sort_by(.position) | .[]" }}
+{{   $sortedOthers = $sortedOthers | jq "sort_by(.position) | .[]" -}}
 {{   range $_, $otherData := $sortedOthers -}}
 {{     if gt $otherData.position 0 -}}
 addOther "{{ $otherData.label }}" "{{ $otherData.path }}" {{ $otherData.position }} {{ $otherData.sort }} {{ $otherData.display }} {{ $otherData.view }}
 {{     else -}}
 removeItem "{{ $otherData.label }}"
 {{     end -}}
+{{   end -}}
+{{   range $_, $otherData := $unsortedOthers -}}
+addOther "{{ $otherData.label }}" "{{ $otherData.path }}" {{ $otherData.position }} {{ $otherData.sort }} {{ $otherData.display }} {{ $otherData.view }}
 {{   end -}}
 {{ end }}
 
