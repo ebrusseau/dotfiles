@@ -56,13 +56,13 @@ CHECK="${BHGN}✓${CLR}"
 CROSS="${BHRD}✗${CLR}"
 WARN="${BHYW}⚠${CLR}"
 SPINNER_PID=""
+USE_SPINNER=1
 
 # Script Data
 SCRIPT_NAME="$(basename ${BASH_SOURCE})"
 SCRIPT_PID="${SCRIPT_NAME%%.*}"
 
 # Functions
-
 function spinner() {
   local chars="/-\|"
   local spin_i=0
@@ -73,11 +73,19 @@ function spinner() {
   done
 }
 
+function kill_spinner {
+  if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID >/dev/null; then kill $SPINNER_PID >/dev/null; fi
+  printf "\e[?25h"
+}
+
 function msg_wait() {
+  if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID >/dev/null; then kill $SPINNER_PID >/dev/null; fi
   local msg="$1"
   echo -ne " ${HOLD} ${BL}${msg}   "
-  spinner &
-  SPINNER_PID=$!
+  if [ $USE_SPINNER -eq 1 ]; then
+    spinner &
+    SPINNER_PID=$!
+  fi
 }
 
 function msg_ok() {
@@ -85,7 +93,7 @@ function msg_ok() {
   printf "\e[?25h"
   local msg="$1"
   local cr_arg=""
-  [ "$2" == "nocr" ] && cr_arg="n"
+  [ "${2:-}" == "nocr" ] && cr_arg="n"
   echo -${cr_arg}e "${BFR} ${CHECK} ${GN}${msg}${CLR}"
 }
 
@@ -102,6 +110,8 @@ function msg_error() {
   local msg="$1"
   echo -e "${BFR} ${CROSS} ${RD}${msg}${CLR}"
 }
+
+trap kill_spinner EXIT
 
 echo ""
 echo -e "${BHWH}[${BL}${SCRIPT_NAME}${BHWH}]${GN} Start${CLR}"
