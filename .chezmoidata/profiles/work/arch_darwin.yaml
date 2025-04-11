@@ -3,12 +3,30 @@ profiles:
     machine:
       arch:
         darwin:
+          dock:
+            apps:
+              Mail:
+                position: 0
+              Calendar:
+                position: 0
+              Google Chrome:
+                position: 2
+              Microsoft Teams:
+                position: 3
+              Microsoft Outlook:
+                position: 4
+              Messages:
+                position: 5
+              Reminders:
+                position: 6
+              Notes:
+                position: 7
+              PowerShell:
+                position: 8
           packages:
             homebrew:
               casks:
-                citrix-workspace: true
-                git-credential-manager: true
                 microsoft-azure-storage-explorer: true
+                microsoft-office-businesspro: true
                 powershell: true
-                webex-meetings: true
                 zoom: true

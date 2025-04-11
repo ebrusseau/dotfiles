@@ -73,6 +73,7 @@ machine:
             font-jetbrains-mono-nerd-font: true
             font-symbols-only-nerd-font: true
             ghostty: true
+            git-credential-manager: true
             google-chrome: true
             visual-studio-code: true
             wezterm: true
