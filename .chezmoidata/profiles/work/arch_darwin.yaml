@@ -1,13 +1,13 @@
-tag:
+profiles:
   work:
     machine:
       arch:
         darwin:
-          is_darwin_work: true
           packages:
             homebrew:
               casks:
                 citrix-workspace: true
+                git-credential-manager: true
                 microsoft-azure-storage-explorer: true
                 powershell: true
                 webex-meetings: true

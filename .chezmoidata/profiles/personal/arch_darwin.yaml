@@ -1,9 +1,8 @@
-tag:
+profiles:
   personal:
     machine:
       arch:
         darwin:
-          is_darwin_personal: true
           packages:
             homebrew:
               casks:

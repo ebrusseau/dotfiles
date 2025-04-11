@@ -2,7 +2,7 @@
 {{ $archId := .chezmoi.os -}}
 {{- $archData := get .machine.arch "default" -}}
 {{- $hostData := get .machine.host "default" -}}
-{{- $tagData := get .machine.arch "default" -}}
+{{- $profileData := get .machine.arch "default" -}}
 
 {{- if eq $archId "linux" -}}
 {{-   $archId = .chezmoi.osRelease.id -}}
@@ -12,10 +12,10 @@
 {{-   $archData = mergeOverwrite $archData (get .machine.arch $archId) -}}
 {{- end -}}
 
-{{- range $tagName := .tags -}}
-{{-   if (hasKey $.tag $tagName) -}}
-{{-     with (get $.tag $tagName) -}}
-{{-       $tagData = mergeOverwrite $tagData (dig "machine" "arch" $archId dict .) -}}
+{{- range $profileName := $.active_profiles -}}
+{{-   if (hasKey $.profiles $profileName) -}}
+{{-     with (get $.profiles $profileName) -}}
+{{-       $profileData = mergeOverwrite $profileData (dig "machine" "arch" $archId dict .) -}}
 {{-     end -}}
 {{    end -}}
 {{- end -}}
@@ -24,5 +24,5 @@
 {{-     $hostData = mergeOverwrite $hostData (get .machine.host .chezmoi.hostname) -}}
 {{- end -}}
 
-{{- $machineData := mergeOverwrite $archData $tagData $hostData -}}
+{{- $machineData := mergeOverwrite $archData $profileData $hostData -}}
 {{ toYaml $machineData }}

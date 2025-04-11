@@ -1,12 +1,17 @@
 {{- /* Checks if running interactively */ -}}
 {{- $interactive := stdinIsATTY -}}
-{{- $availableTags := list "Work" "Personal" -}}
-{{- $tags := promptMultichoice  "Select the tags you would like to apply to this machine (optional)"
-    $availableTags (list)
+{{- $profileDirs := output "ls" (printf "%s/.chezmoidata/profiles" .chezmoi.sourceDir) | trim | splitList "\n" | sortAlpha -}}
+{{- $availableProfiles := list -}}
+{{- range $_, $profileDir := $profileDirs -}}
+{{-   $availableProfiles = append $availableProfiles (title $profileDir) -}}
+{{- end }}
+{{- $activeProfiles := promptMultichoice "Select the profiles you would like to activate for this machine (optional)"
+    $availableProfiles (list)
 -}}
 
 data:
-  tags: {{ $tags | toYaml | lower | nindent 4 }}
+  available_profiles: {{ $availableProfiles | toYaml | nindent 4 }}
+  active_profiles: {{ $activeProfiles | toYaml | lower | nindent 4 }}
 
 # hooks:
 #     init:
