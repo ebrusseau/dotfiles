@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -eufo pipefail
-
 {{ template "script_header.tmpl" }}
 {{ $machine := (fromYaml (includeTemplate "machine.yaml.tmpl" .)) -}}
 
@@ -109,13 +107,14 @@ function addOther {
 # $1 label
 function removeItem {
   local label="$1"
+  local du_result
 
   msg_wait "Looking for docked item with label \"${label}\""
   dockutil --find "${label}" > /dev/null 2>&1
-  if [ $? -eq 0 ]; then
-    msg_ok "Found item with label \"${label}\" in dock: " nocr
+  du_result=$?
+  if [ $du_result -eq 0 ]; then
     dockutil --no-restart --remove "${app_name}"
-    echo "Removed"
+    msg_ok "Item with label \"${label}\" removed from dock" 
   else
     msg_warn "Item with label \"${label}\" not found in dock"
   fi
