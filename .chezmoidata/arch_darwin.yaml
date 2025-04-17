@@ -55,8 +55,10 @@ machine:
             htop: true
             jq: true
             mas: true
-            neovim: true 
+            neovim: true
+            nmap: true
             ripgrep: true
+            telnet: true
             tree: true
             watch: true
             wget: true
@@ -68,6 +70,7 @@ machine:
             1password-cli: true
             bartender: true
             betterzip: true
+            docker: true
             flycut: true
             font-hack-nerd-font: true
             font-jetbrains-mono-nerd-font: true
@@ -75,6 +78,7 @@ machine:
             ghostty: true
             git-credential-manager: true
             google-chrome: true
+            sublime-text: true
             visual-studio-code: true
             wezterm: true
           mas:
@@ -88,9 +92,11 @@ machine:
               id: 1153157709
               install: true
           vscode:
+            aaron-bond.better-comments: true
             casualjim.gotemplate: true
             docker.docker: true
             golang.go: true
             redhat.vscode-yaml: true
             tamasfe.even-better-toml: true
             vscode-icons-team.vscode-icons: true
+            yzhang.markdown-all-in-one: true

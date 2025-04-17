@@ -26,9 +26,20 @@ profiles:
           packages:
             homebrew:
               brews:
+                awscli: true
+                azcopy: true
+                azure-cli: true
                 terraform: true
+                terraform-docs: true
+                tflint: true
               casks:
+                citrix-workspace: true
                 microsoft-azure-storage-explorer: true
                 microsoft-office-businesspro: true
+                postman: true
                 powershell: true
                 zoom: true
+              vscode:
+                hashicorp.terraform: true
+                ms-azure-devops.azure-pipelines: true
+                ms-vscode.powershell: true
