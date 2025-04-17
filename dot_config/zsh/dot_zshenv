@@ -24,7 +24,6 @@ fpath=(
 path=(
   $HOME/bin(/N)
   $HOME/.local/bin(/N)
-  /opt/homebrew/{,s}bin(/N)
   /usr/local/{,s}bin(/N)
   /usr/{,s}bin(/N)
   $path
