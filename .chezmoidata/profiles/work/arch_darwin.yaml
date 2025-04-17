@@ -25,6 +25,8 @@ profiles:
                 position: 8
           packages:
             homebrew:
+              brews:
+                terraform: true
               casks:
                 microsoft-azure-storage-explorer: true
                 microsoft-office-businesspro: true
