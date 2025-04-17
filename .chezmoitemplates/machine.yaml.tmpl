@@ -12,7 +12,7 @@
 {{-   $archData = mergeOverwrite $archData (get .machine.arch $archId) -}}
 {{- end -}}
 
-{{- range $profileName := $.active_profiles -}}
+{{- range $profileName := .active_profiles -}}
 {{-   if (hasKey $.profiles $profileName) -}}
 {{-     with (get $.profiles $profileName) -}}
 {{-       $profileData = mergeOverwrite $profileData (dig "machine" "arch" $archId dict .) -}}
