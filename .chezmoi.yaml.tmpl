@@ -11,7 +11,7 @@
 
 data:
   available_profiles: {{ $availableProfiles | toYaml | nindent 4 }}
-  active_profiles: {{ $activeProfiles | toYaml | lower | nindent 4 }}
+  active_profiles: {{ $activeProfiles | toYaml | nindent 4 }}
 
 # hooks:
 #     init:

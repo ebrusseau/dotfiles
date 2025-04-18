@@ -29,7 +29,7 @@ set -e
 # Check for Package Manager Binary 
 if [ ! "$(command -v '{{- $packageManagerOptions.command -}}')" ]; then
 {{-     if not (empty $packageManagerOptions.install_script) }}
-    echo "Installing {{ $packageManagerName }} ..."
+    echo "Installing package manager: {{ $packageManagerName }}"
 {{        $packageManagerOptions.install_script | indent 4 -}}
 {{      else }}
     echo "ERROR: Unable to find package manager command '{{- $packageManagerOptions.command -}}'"

@@ -149,7 +149,8 @@ echo "Processing application items ..."
 {{     if gt $appData.position 0 -}}
 addApp "{{ $appData.label }}" {{ $appData.position }}
 {{     else -}}
-removeItem "{{ $appData.label }}"
+{{/* TODO: Do not need to remove item if we are cleaning the dock before adding */}}
+{{/* removeItem "{{ $appData.label }}" */}}
 {{     end -}}
 {{   end -}}
 {{   range $_, $appData := $unsortedApps -}}
@@ -187,7 +188,8 @@ echo "Processing file / folder items ..."
 {{     if gt $otherData.position 0 -}}
 addOther "{{ $otherData.label }}" "{{ $otherData.path }}" {{ $otherData.position }} {{ $otherData.sort }} {{ $otherData.display }} {{ $otherData.view }}
 {{     else -}}
-removeItem "{{ $otherData.label }}"
+{{/* TODO: Do not need to remove item if we are cleaning the dock before adding */}}
+{{/* removeItem "{{ $otherData.label }}" */}}
 {{     end -}}
 {{   end -}}
 {{   range $_, $otherData := $unsortedOthers -}}

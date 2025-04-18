@@ -15,8 +15,9 @@ case "$os" in
     
     if [ $rc -ne 0 ]; then
       echo "Xcode command line developer tools will now be installed."
-      echo "Please enter your password to continue."
+      echo "You may be required to enter your password to continue."
       sudo -v
+      while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
       echo ""
 
       clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
@@ -98,6 +99,9 @@ case "$os" in
       fi
 
       echo "Installing missing pre-requisites ..."
+      echo "You may be required to enter your password to continue."
+      sudo -v
+      while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
       echo ""
       sh -c "${install_command} ${missing}"
       rc=$?

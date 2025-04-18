@@ -13,8 +13,8 @@
 {{- end -}}
 
 {{- range $profileName := .active_profiles -}}
-{{-   if (hasKey $.profiles $profileName) -}}
-{{-     with (get $.profiles $profileName) -}}
+{{-   if (hasKey $.profiles (lower $profileName)) -}}
+{{-     with (get $.profiles (lower $profileName)) -}}
 {{-       $profileData = mergeOverwrite $profileData (dig "machine" "arch" $archId dict .) -}}
 {{-     end -}}
 {{    end -}}

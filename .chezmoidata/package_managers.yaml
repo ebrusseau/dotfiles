@@ -11,8 +11,9 @@ package_manager:
       HOMEBREW_NO_ENV_HINTS: '1'
     install_script: |
       echo "Homebrew will be installed."
-      echo "Validating sudo permissions."
+      echo "You may be required to enter your password to continue."
       sudo -v
+      while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
       echo ""
       
       export NONINTERACTIVE=1
