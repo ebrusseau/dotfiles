@@ -39,6 +39,13 @@ profiles:
                 postman: true
                 powershell: true
                 zoom: true
+              mas:
+                SubnetCalc:
+                  id: 412946682
+                  install: true
+                Windows App:
+                  id: 1295203466
+                  install: true
               vscode:
                 hashicorp.terraform: true
                 ms-azure-devops.azure-pipelines: true
