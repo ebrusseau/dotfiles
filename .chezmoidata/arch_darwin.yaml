@@ -104,6 +104,7 @@ machine:
             aaron-bond.better-comments: true
             casualjim.gotemplate: true
             docker.docker: true
+            editorconfig.editorconfig: true
             golang.go: true
             redhat.vscode-yaml: true
             tamasfe.even-better-toml: true

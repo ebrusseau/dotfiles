@@ -1,0 +1,19 @@
+profiles:
+  python:
+    machine:
+      arch:
+        darwin:
+          packages:
+            homebrew:
+              brews:
+                uv: true
+              vscode:
+                ms-python.black-formatter: true
+                ms-python.debugpy: true
+                ms-python.mypy-type-checker: true
+                ms-python.pylint: true
+                ms-python.python: true
+                ms-python.vscode-pylance: true
+                ms-python.vscode-python-envs: true
+                charliemarsh.ruff: true
+                njpwerner.autodocstring: true
