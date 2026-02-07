@@ -42,7 +42,7 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 auto-update = check
-theme = Nightlion V1
+theme = Night Lion V1
 background-opacity = 0.85
 font-family = JetBrainsMono Nerd Font Mono
 font-style = Bold
