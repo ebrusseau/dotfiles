@@ -106,3 +106,5 @@ machine:
             tamasfe.even-better-toml: true
             vscode-icons-team.vscode-icons: true
             yzhang.markdown-all-in-one: true
+            ms-vscode-remote.remote-containers: true
+            ms-azuretools.vscode-containers: true
