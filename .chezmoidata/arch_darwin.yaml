@@ -40,7 +40,6 @@ machine:
       packages:
         homebrew:
           taps:
-            homebrew/command-not-found: true
           brews:
             antidote: true
             bash: true
