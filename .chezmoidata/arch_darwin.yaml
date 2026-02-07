@@ -69,7 +69,7 @@ machine:
             1password-cli: true
             bartender: true
             betterzip: true
-            docker: true
+            docker-desktop: true
             flycut: true
             font-hack-nerd-font: true
             font-jetbrains-mono-nerd-font: true
