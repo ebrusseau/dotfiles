@@ -15,5 +15,5 @@ profiles:
                 ms-python.python: true
                 ms-python.vscode-pylance: true
                 ms-python.vscode-python-envs: true
-                charliemarsh.ruff: true
+                charliermarsh.ruff: true
                 njpwerner.autodocstring: true

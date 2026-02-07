@@ -21,7 +21,7 @@ profiles:
                 position: 6
               Notes:
                 position: 7
-              PowerShell:
+              Visual Studio Code:
                 position: 8
           packages:
             homebrew:
