@@ -87,9 +87,6 @@ machine:
             Disk Map:
               id: 715464874
               install: true
-            ForkLift:
-              id: 412448059
-              install: true
             Patterns:
               id: 429449079
               install: true
