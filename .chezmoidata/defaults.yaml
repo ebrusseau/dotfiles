@@ -12,6 +12,7 @@ package_manager:
     sudo: true
     install_args: ''
     update_args: ''
+    show_installed_args: ''
     pass_packages_via_stdin: false
     list_template: ''
     env: {}

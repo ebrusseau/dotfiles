@@ -5,6 +5,7 @@ package_manager:
     sudo: false
     install_args: 'bundle install --no-upgrade --cleanup --zap --file=/dev/stdin'
     update_args: 'update'
+    show_installed_args: 'list'
     pass_packages_via_stdin: true
     list_template: 'homebrew_package_list.tmpl'
     env:

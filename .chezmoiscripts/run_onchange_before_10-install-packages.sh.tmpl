@@ -17,11 +17,13 @@ set -e
 {{           $packages = append $packages $packageName -}}
 {{         end -}}
 {{       end -}}
-{{     end -}}
+{{     end }}
 
 ####
-# {{ $packageManagerName }}
+# Package Manager: {{ $packageManagerName }}
+# Currently Installed Packages Checksum: {{ output $packageManagerOptions.command $packageManagerOptions.show_installed_args | sha256sum }}
 ####
+
 {{      range $var, $value := $packageManagerOptions.env -}}
 {{        printf "export %s=%s" ($var | upper) $value }}
 {{      end }}
