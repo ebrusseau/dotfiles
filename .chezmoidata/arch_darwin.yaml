@@ -40,6 +40,7 @@ machine:
       packages:
         homebrew:
           taps:
+            dotenvx/brew: true
           brews:
             antidote: true
             bash: true
@@ -47,11 +48,14 @@ machine:
             bat: true
             chezmoi: true
             dockutil: true
+            dotenvx/brew/dotenvx: true
             fd: true
             fzf: true
             git: true
             git-crypt: true
             htop: true
+            httpie: true
+            just: true
             jq: true
             mas: true
             neovim: true
@@ -98,6 +102,7 @@ machine:
               install: true
           vscode:
             aaron-bond.better-comments: true
+            anthropic.claude-code: true
             casualjim.gotemplate: true
             docker.docker: true
             editorconfig.editorconfig: true
